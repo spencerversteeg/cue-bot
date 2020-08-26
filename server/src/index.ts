@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express, { Application, Request, Response, NextFunction } from "express";
-import chalk from "chalk";
 import bodyParser from "body-parser";
 
 import errorHandler from "./api/middlewares/error";
@@ -29,7 +28,5 @@ app.use("/api/user", user_routes);
 app.listen(port, (err) => {
   if (err) return console.log(err);
 
-  return console.log(
-    chalk.green(`🚀 The server is now listening on port ${port}.`)
-  );
+  return console.log(`🚀 The server is now listening on port ${port}.`);
 });

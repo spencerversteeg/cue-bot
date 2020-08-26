@@ -21,7 +21,7 @@ export const get_user = async (
   next: NextFunction
 ) => {
   try {
-    const user = User.findById(req.params.user_id);
+    const user = await User.findById(req.params.user_id);
     if (user) return res.status(200).json(user);
 
     return next({
@@ -61,7 +61,7 @@ export const delete_user = async (
   next: NextFunction
 ) => {
   try {
-    const user = User.findByIdAndDelete(req.params.user_id);
+    const user = await User.findByIdAndDelete(req.params.user_id);
 
     if (user) return res.status(200).json(user);
 
