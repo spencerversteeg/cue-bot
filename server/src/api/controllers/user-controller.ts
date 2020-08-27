@@ -35,19 +35,6 @@ export const get_user = async (
   }
 };
 
-export const create_user = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    // Write user will go into here.
-    return res.status(200).json({});
-  } catch (error) {
-    return next(error);
-  }
-};
-
 export const write_user = async (user_data) => {
   try {
     const user = await User.create({
@@ -63,25 +50,6 @@ export const write_user = async (user_data) => {
     return user;
   } catch (error) {
     return console.log(error);
-  }
-};
-
-export const delete_user = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const user = await User.findByIdAndDelete(req.params.user_id);
-
-    if (user) return res.status(200).json(user);
-
-    return next({
-      status: 404,
-      message: `There was no user found with the ID: ${req.params.id}.`,
-    });
-  } catch (error) {
-    return next(error);
   }
 };
 
@@ -125,16 +93,60 @@ export const register_user = async (
 
     const discordUserInformation = getDiscordUserInformation.data;
 
-    // write_user({
-    //   _id: discordUserInformation.id,
-    //   username: `${discordUserInformation.username}#${discordUserInformation}`,
-    //   email: discordUserInformation.email,
-    //   profile_image_url: discordUserInformation.avatar,
-    //   discord_access_token: discordAuthenticationInformation.access_token,
-    //   discord_refresh_token: discordAuthenticationInformation.refresh_token,
-    // });
+    const newUser = write_user({
+      id: discordUserInformation.id,
+      username: `${discordUserInformation.username}#${discordUserInformation.discriminator}`,
+      email: discordUserInformation.email,
+      profile_image_url: `https://cdn.discordapp.com/avatars/${discordUserInformation.id}/${discordUserInformation.avatar}.png`,
+      discord_access_token: discordAuthenticationInformation.access_token,
+      discord_refresh_token: discordAuthenticationInformation.refresh_token,
+    });
+
+    res.status(200).json(newUser);
   } catch (error) {
     console.log(error);
+    return next(error);
+  }
+};
+
+export const create_user = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const {
+      id,
+      email,
+      username,
+      profile_image_url,
+      guilds,
+      discord_access_token,
+      discord_refresh,
+    } = req.body;
+
+    const newUser = write_user(req.body);
+    return res.status(200).json(newUser);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const delete_user = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.user_id);
+
+    if (user) return res.status(200).json(user);
+
+    return next({
+      status: 404,
+      message: `There was no user found with the ID: ${req.params.id}.`,
+    });
+  } catch (error) {
     return next(error);
   }
 };
