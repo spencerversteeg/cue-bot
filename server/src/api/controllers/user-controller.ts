@@ -93,7 +93,7 @@ export const register_user = async (
 
     const discordUserInformation = getDiscordUserInformation.data;
 
-    const newUser = write_user({
+    const newUser = await write_user({
       id: discordUserInformation.id,
       username: `${discordUserInformation.username}#${discordUserInformation.discriminator}`,
       email: discordUserInformation.email,
@@ -122,10 +122,18 @@ export const create_user = async (
       profile_image_url,
       guilds,
       discord_access_token,
-      discord_refresh,
+      discord_refresh_token,
     } = req.body;
 
-    const newUser = write_user(req.body);
+    const newUser = write_user({
+      _id: id,
+      email,
+      username,
+      profile_image_url,
+      guilds,
+      discord_access_token,
+      discord_refresh_token,
+    });
     return res.status(200).json(newUser);
   } catch (error) {
     return next(error);
