@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import axios from "axios";
+import jwt from "jsonwebtoken";
 import User from "../models/User";
 
 export const get_all_users = async (
@@ -39,19 +41,28 @@ export const create_user = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.create({
-      _id: req.body.id,
-      email: req.body.email,
-      username: req.body.username,
-      profile_image_url: req.body.profile_image_url,
-      guilds: req.body.guilds,
-      discord_access_token: req.body.discord_access_token,
-      discord_refresh_token: req.body.discord_refresh_token,
-    });
-
-    return res.status(200).json(user);
+    // Write user will go into here.
+    return res.status(200).json({});
   } catch (error) {
     return next(error);
+  }
+};
+
+export const write_user = async (user_data) => {
+  try {
+    const user = await User.create({
+      _id: user_data.id,
+      email: user_data.email,
+      username: user_data.username,
+      profile_image_url: user_data.profile_image_url,
+      guilds: user_data.guilds,
+      discord_access_token: user_data.discord_access_token,
+      discord_refresh_token: user_data.discord_refresh_token,
+    });
+
+    return user;
+  } catch (error) {
+    return console.log(error);
   }
 };
 
@@ -70,6 +81,60 @@ export const delete_user = async (
       message: `There was no user found with the ID: ${req.params.id}.`,
     });
   } catch (error) {
+    return next(error);
+  }
+};
+
+export const register_user = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.body.code)
+      return next({ status: 422, message: "No code was provided." });
+
+    const code = req.body.code;
+    const client_id = process.env.DISCORD_CLIENT_ID;
+    const client_secret = process.env.DISCORD_CLIENT_SECRET;
+
+    const auth_request_url = "https://discordapp.com/api/oauth2/token";
+    const auth_request_body = `client_id=${client_id}&client_secret=${client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:8080/`;
+    const auth_request_config = {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    };
+
+    const authorizeUserWithDiscord = await axios.post(
+      auth_request_url,
+      auth_request_body,
+      auth_request_config
+    );
+    const discordAuthenticationInformation = authorizeUserWithDiscord.data;
+
+    const user_request_url = "https://discordapp.com/api/users/@me";
+    const user_request_config = {
+      headers: {
+        Authorization: `Bearer ${discordAuthenticationInformation.access_token}`,
+      },
+    };
+
+    const getDiscordUserInformation = await axios.get(
+      user_request_url,
+      user_request_config
+    );
+
+    const discordUserInformation = getDiscordUserInformation.data;
+
+    // write_user({
+    //   _id: discordUserInformation.id,
+    //   username: `${discordUserInformation.username}#${discordUserInformation}`,
+    //   email: discordUserInformation.email,
+    //   profile_image_url: discordUserInformation.avatar,
+    //   discord_access_token: discordAuthenticationInformation.access_token,
+    //   discord_refresh_token: discordAuthenticationInformation.refresh_token,
+    // });
+  } catch (error) {
+    console.log(error);
     return next(error);
   }
 };
