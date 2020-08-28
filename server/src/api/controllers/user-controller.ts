@@ -152,7 +152,7 @@ export const delete_user = async (
 
     return next({
       status: 404,
-      message: `There was no user found with the ID: ${req.params.id}.`,
+      message: `There was no user found with the ID: ${req.params.user_id}.`,
     });
   } catch (error) {
     return next(error);

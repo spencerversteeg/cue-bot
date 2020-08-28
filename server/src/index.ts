@@ -22,7 +22,9 @@ connect(db);
 
 // Routes
 import user_routes from "./api/routes/user-routes";
+import guild_routes from "./api/routes/guild-routes";
 app.use("/api/user", user_routes);
+app.use("/api/guild", guild_routes);
 
 // Start express server.
 app.listen(port, (err) => {
