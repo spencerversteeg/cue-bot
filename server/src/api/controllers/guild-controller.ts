@@ -41,7 +41,7 @@ export const create_guild = async (
   try {
     const guild = await Guild.create({
       _id: req.body.id,
-      user: req.body.guilds,
+      user: req.body.user,
       commands: [],
     });
 
