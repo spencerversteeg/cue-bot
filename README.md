@@ -41,7 +41,7 @@ JWT_SECRET=
 ### To Run
 
 ```bash
-# Move into the client directory.
+# Move into the server directory.
 $ cd client
 
 # Install all of the required NPM packages.
