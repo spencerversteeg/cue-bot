@@ -39,15 +39,29 @@ export const create_guild = async (
   next: NextFunction
 ) => {
   try {
-    const guild = await Guild.create({
-      _id: req.body.id,
-      user: req.body.user_id,
+    const guild = await write_guild({
+      _id: req.body.guild_id,
+      user: req.body.user_Id,
       commands: [],
     });
 
     return res.status(200).json(guild);
   } catch (error) {
     return next(error);
+  }
+};
+
+export const write_guild = async (guild_data) => {
+  try {
+    const guild = await Guild.create({
+      _id: guild_data.guild_id,
+      user: [guild_data.user_id],
+      commands: [],
+    });
+
+    return guild;
+  } catch (error) {
+    return console.log(error);
   }
 };
 

@@ -10,9 +10,7 @@ export default {
   name: "Home",
   methods: {
     authorizeWithDiscord() {
-      const discordAuthentication = `https://discord.com/api/oauth2/authorize?client_id=${process.env.VUE_APP_DISCORD_CLIENT_ID}&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=code&scope=guilds%20identify%20email`;
-
-      window.location.href = discordAuthentication;
+      window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${process.env.VUE_APP_DISCORD_CLIENT_ID}&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=code&scope=guilds%20identify%20email%20bot`;
     },
     async checkForCode() {
       if (!this.$route.query.code) return;

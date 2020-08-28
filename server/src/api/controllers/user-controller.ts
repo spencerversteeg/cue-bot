@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import { write_guild } from "../controllers/guild-controller";
 
 export const get_all_users = async (
   req: Request,
@@ -117,6 +118,13 @@ export const register_user = async (
       profile_image_url: `https://cdn.discordapp.com/avatars/${discordUserInformation.id}/${discordUserInformation.avatar}.png`,
       discord_access_token: discordAuthenticationInformation.access_token,
       discord_refresh_token: discordAuthenticationInformation.refresh_token,
+    });
+
+    // Create a new guild based on the data recieved from Discord.
+    // console.log(discordAuthenticationInformation);
+    write_guild({
+      guild_id: discordAuthenticationInformation.guild.id,
+      user_id: discordUserInformation.id,
     });
 
     // This data is stored in the JWT that is returned to the user.
