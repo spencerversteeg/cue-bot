@@ -10,7 +10,7 @@ export default {
   name: "Home",
   methods: {
     authorizeWithDiscord() {
-      const discordAuthentication = `https://discord.com/api/oauth2/authorize?client_id=${process.env.VUE_APP_DISCORD_CLIENT_ID}&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=code&scope=guilds%20identify%20bot%20email`;
+      const discordAuthentication = `https://discord.com/api/oauth2/authorize?client_id=${process.env.VUE_APP_DISCORD_CLIENT_ID}&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=code&scope=guilds%20identify%20email`;
 
       window.location.href = discordAuthentication;
     },
@@ -23,7 +23,11 @@ export default {
           { code: this.$route.query.code }
         );
 
-        console.log(stepTwo);
+        // Once the response is done, set the JWT within the Vuex module and redirect the user to the add the bot page.
+        if (stepTwo.body.token) {
+          this.$store.commit("user/setJWT", stepTwo.body.token);
+          this.$router.push("/add");
+        }
       } catch (error) {
         console.log(error);
       }
