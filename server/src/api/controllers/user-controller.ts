@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User";
 import { write_guild } from "../controllers/guild-controller";
 
+// Will return all users from the databse.
 export const get_all_users = async (
   req: Request,
   res: Response,
@@ -18,6 +19,7 @@ export const get_all_users = async (
   }
 };
 
+// Will return a single user if there is an ID that matches the parameter provided.
 export const get_user = async (
   req: Request,
   res: Response,
@@ -36,6 +38,7 @@ export const get_user = async (
   }
 };
 
+// Writes a user to the database with the provided information.
 export const write_user = async (user_data) => {
   try {
     const user = await User.create({
@@ -54,6 +57,7 @@ export const write_user = async (user_data) => {
   }
 };
 
+// Complete the Discord OAuth process, and write a user to the databse once the required information has been retrieved.
 export const register_user = async (
   req: Request,
   res: Response,
@@ -145,6 +149,7 @@ export const register_user = async (
   }
 };
 
+// Create a user with a POST request.
 export const create_user = async (
   req: Request,
   res: Response,
@@ -176,6 +181,7 @@ export const create_user = async (
   }
 };
 
+// Will delete a user if the given paramter matches a user within the database.
 export const delete_user = async (
   req: Request,
   res: Response,
