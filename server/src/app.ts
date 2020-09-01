@@ -11,10 +11,10 @@ class App {
   constructor(controllers: Controller[]) {
     this.app = express();
 
-    this.connectDatabase();
-    this.initializeMiddleware();
-    this.initializeControllers(controllers);
-    this.initializeErrorHandler();
+    this.connect_database();
+    this.initialize_middleware();
+    this.initialize_controllers(controllers);
+    this.initialize_error_handler();
   }
 
   public listen() {
@@ -23,22 +23,22 @@ class App {
     });
   }
 
-  private initializeMiddleware() {
+  private initialize_middleware() {
     this.app.use(logger_middleware);
     this.app.use(bodyParser.json());
   }
 
-  private initializeErrorHandler() {
+  private initialize_error_handler() {
     this.app.use(error_middleware);
   }
 
-  private initializeControllers(controllers) {
+  private initialize_controllers(controllers) {
     controllers.forEach((controller) => {
       this.app.use("/", controller.router);
     });
   }
 
-  private connectDatabase() {
+  private connect_database() {
     mongoose.connect(process.env.MONGO_URI, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
