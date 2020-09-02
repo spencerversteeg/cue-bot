@@ -1,6 +1,6 @@
 interface token {
   token: string;
-  expires_in: number;
+  expiresIn: number;
 }
 
 export default token;
