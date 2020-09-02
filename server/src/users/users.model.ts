@@ -1,7 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import User from "./users.interface";
 
-const user_schema = new Schema({
+const userSchema = new Schema({
   _id: {
     type: String,
     required: true,
@@ -30,6 +30,6 @@ const user_schema = new Schema({
   },
 });
 
-const user_model = model<User & Document>("User", user_schema);
+const userModel = model<User & Document>("User", userSchema);
 
-export default user_model;
+export default userModel;

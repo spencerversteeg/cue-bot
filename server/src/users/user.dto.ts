@@ -1,6 +1,6 @@
 import { IsString } from "class-validator";
 
-class create_user_dto {
+class CreateUserDTO {
   @IsString()
   public _id: string;
 
@@ -23,4 +23,4 @@ class create_user_dto {
   public discord_refresh_token: string;
 }
 
-export default create_user_dto;
+export default CreateUserDTO;

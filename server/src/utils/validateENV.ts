@@ -1,6 +1,6 @@
 import { cleanEnv, port, str } from "envalid";
 
-const validate_env = () => {
+const validateENV = () => {
   return cleanEnv(process.env, {
     PORT: port(),
     DISCORD_CLIENT_ID: str(),
@@ -10,4 +10,4 @@ const validate_env = () => {
   });
 };
 
-export default validate_env;
+export default validateENV;

@@ -10,8 +10,7 @@ import User from "../users/users.interface";
 import user_model from "../users/users.model";
 import user_dto from "../users/user.dto";
 
-import already_exist_exception from "../exceptions/AlreadyExistException";
-import missing_code_exception from "../exceptions/MissingCodeException";
+import MissingCodeException from "../exceptions/MissingCodeException";
 import AlreadyExistException from "../exceptions/AlreadyExistException";
 
 class AuthenticationController implements Controller {
@@ -20,71 +19,71 @@ class AuthenticationController implements Controller {
   private user = user_model;
 
   constructor() {
-    this.initialize_routes();
+    this.initializeRoutes();
   }
 
-  private initialize_routes() {
-    this.router.post("/login", this.register_user);
+  private initializeRoutes() {
+    this.router.post("/login", this.registerUser);
   }
 
-  private register_user = async (
+  private registerUser = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     const user_data: user_dto = req.body;
 
-    if (!req.body.code) return next(new missing_code_exception());
+    if (!req.body.code) return next(new MissingCodeException());
 
     const code: string = req.body.code;
-    const client_id: string = process.env.DISCORD_CLIENT_ID;
-    const client_secret: string = process.env.DISCORD_CLIENT_SECRET;
+    const clientID: string = process.env.DISCORD_CLIENT_ID;
+    const clientSecret: string = process.env.DISCORD_CLIENT_SECRET;
 
-    const auth_request_url: string = "https://discordapp.com/api/oauth2/token";
-    const auth_request_body: string = `client_id=${client_id}&client_secret=${client_secret}&code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:8080/`;
-    const auth_request_config = {
+    const authRequestURL: string = "https://discordapp.com/api/oauth2/token";
+    const authRequestBody: string = `client_id=${clientID}&client_secret=${clientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:8080/`;
+    const authRequestConfig = {
       headers: {
         "Content-Type": "application/x-www-form-urlendoded",
       },
     };
 
-    const auth_discord = await axios.post(
-      auth_request_url,
-      auth_request_body,
-      auth_request_config
+    const authDiscord = await axios.post(
+      authRequestURL,
+      authRequestBody,
+      authRequestConfig
     );
 
-    const auth_discord_data = auth_discord.data;
+    const authDiscordData = authDiscord.data;
 
-    const user_request_url: string = "https://discordapp.com/api/users/@me";
-    const user_request_config = {
+    const userRequestURL: string = "https://discordapp.com/api/users/@me";
+    const userRequestConfig = {
       headers: {
-        Authorization: `Bearer ${auth_discord_data.access_token}`,
+        Authorization: `Bearer ${authDiscordData.access_token}`,
       },
     };
 
-    const discord_user = await axios.get(user_request_url, user_request_config);
+    const discordUser = await axios.get(userRequestURL, userRequestConfig);
 
-    const discord_user_data = discord_user.data;
+    const discordUserData = discordUser.data;
 
-    const new_user_data: User = {
-      _id: auth_discord_data.id,
-      email: discord_user_data.email,
-      username: `${discord_user_data.username}#${discord_user_data.discriminator}`,
-      profile_image_url: `https://cdn.discordapp.com/avatars/${discord_user_data.id}/${discord_user_data.avatar}.png`,
-      discord_access_token: auth_discord_data.access_token,
-      discord_refresh_token: auth_discord_data.refresh_token,
+    const newUserData: User = {
+      _id: authDiscordData.id,
+      email: discordUserData.email,
+      username: `${discordUserData.username}#${discordUserData.discriminator}`,
+      profile_image_url: `https://cdn.discordapp.com/avatars/${discordUserData.id}/${discordUserData.avatar}.png`,
+      discord_access_token: authDiscordData.access_token,
+      discord_refresh_token: authDiscordData.refresh_token,
       guilds: [],
     };
 
-    const new_user = await this.user.create(new_user_data);
+    const newUser = await this.user.create(newUserData);
 
-    const token_data = this.create_token(new_user);
+    const token_data = this.createToken(newUserData);
 
-    return res.status(200).json(new_user);
+    return res.status(200).json(newUser);
   };
 
-  private create_token = (user: User): Token => {
+  private createToken = (user: User): Token => {
     const { _id, discord_access_token } = user;
     const expiresIn = 86400; // One Day
     const jwt_token = jsonwebtoken.sign(

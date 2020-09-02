@@ -1,33 +1,28 @@
 import { Router, Request, Response, NextFunction } from "express";
 import User from "./users.interface";
-import user_model from "./users.model";
-import user_not_found_exception from "../exceptions/UserNotFoundException";
+import userModel from "./users.model";
+import UserNotFoundException from "../exceptions/UserNotFoundException";
 import validation from "../middleware/validation.middleware";
-import user_dto from "./user.dto";
-import HttpException from "../exceptions/HttpException";
+import UserDTO from "./user.dto";
 
 class UserController {
   public path = "/users";
   public router = Router();
-  private user = user_model;
+  private user = userModel;
 
   constructor() {
-    this.initialize_routes();
+    this.initializeRoutes();
   }
 
-  private initialize_routes() {
-    this.router.get(this.path, this.get_all_users);
-    this.router.post(`${this.path}`, validation(user_dto), this.create_user);
-    this.router.get(`${this.path}/:id`, this.get_user_by_id);
-    this.router.patch(
-      `${this.path}/:id`,
-      validation(user_dto),
-      this.modify_user
-    );
-    this.router.delete(`${this.path}/:id`, this.delete_user);
+  private initializeRoutes() {
+    this.router.get(this.path, this.getAllUsers);
+    this.router.post(`${this.path}`, validation(UserDTO), this.createUser);
+    this.router.get(`${this.path}/:id`, this.getUserByID);
+    this.router.patch(`${this.path}/:id`, validation(UserDTO), this.modifyUser);
+    this.router.delete(`${this.path}/:id`, this.deleteUser);
   }
 
-  private get_all_users = async (req: Request, res: Response) => {
+  private getAllUsers = async (req: Request, res: Response) => {
     try {
       const users = await this.user.find();
 
@@ -37,7 +32,7 @@ class UserController {
     }
   };
 
-  private get_user_by_id = async (
+  private getUserByID = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -46,58 +41,58 @@ class UserController {
       const user = await this.user.findById(req.params.id);
       if (user) return res.status(200).json(user);
 
-      return next(new user_not_found_exception(req.params.id));
+      return next(new UserNotFoundException(req.params.id));
     } catch (error) {
       return next();
     }
   };
 
-  private modify_user = async (
+  private modifyUser = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      const user_data: User = req.body;
-      const user = await this.user.findByIdAndUpdate(req.params.id, user_data, {
+      const userData: User = req.body;
+      const user = await this.user.findByIdAndUpdate(req.params.id, userData, {
         new: true,
       });
 
       if (user) return res.status(200).json(user);
 
-      return next(new user_not_found_exception(req.params.id));
+      return next(new UserNotFoundException(req.params.id));
     } catch (error) {
       return next();
     }
   };
 
-  private create_user = async (
+  private createUser = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      const user_data: User = req.body;
-      const new_user = new this.user(user_data);
+      const userData: User = req.body;
+      const newUser = new this.user(userData);
 
-      await new_user.save();
+      await newUser.save();
 
-      return res.status(200).json(new_user);
+      return res.status(200).json(newUser);
     } catch (error) {
       return next();
     }
   };
 
-  private delete_user = async (
+  private deleteUser = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      const deleted_user = await this.user.findByIdAndDelete(req.params.id);
-      if (deleted_user) return res.status(200).send({});
+      const deletedUser = await this.user.findByIdAndDelete(req.params.id);
+      if (deletedUser) return res.status(200).send({});
 
-      return next(new user_not_found_exception(req.params.id));
+      return next(new UserNotFoundException(req.params.id));
     } catch (error) {
       return next();
     }
