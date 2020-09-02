@@ -29,8 +29,6 @@ class AuthenticationController implements Controller {
     res: Response,
     next: NextFunction
   ) => {
-    const user_data: user_dto = req.body;
-
     if (!req.body.code) return next(new MissingCodeException());
 
     const code: string = req.body.code;
