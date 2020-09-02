@@ -55,16 +55,7 @@ class AuthenticationController implements Controller {
 
     const authDiscordData = authDiscord.data;
 
-    const userRequestURL: string = "https://discordapp.com/api/users/@me";
-    const userRequestConfig = {
-      headers: {
-        Authorization: `Bearer ${authDiscordData.access_token}`,
-      },
-    };
-
-    const discordUser = await axios.get(userRequestURL, userRequestConfig);
-
-    const discordUserData = discordUser.data;
+    const discordUserData = await this.getDiscordUserData(authDiscordData);
 
     const newUserData: User = {
       _id: authDiscordData.id,
@@ -81,6 +72,19 @@ class AuthenticationController implements Controller {
     const token_data = this.createToken(newUserData);
 
     return res.status(200).json(newUser);
+  };
+
+  private getDiscordUserData = async (user) => {
+    const userRequestURL: string = "https://discordapp.com/api/users/@me";
+    const userRequestConfig = {
+      headers: {
+        Authorization: `Bearer ${user.access_token}`,
+      },
+    };
+
+    const discordUser = await axios.get(userRequestURL, userRequestConfig);
+
+    return discordUser.data;
   };
 
   private createToken = (user: User): Token => {
