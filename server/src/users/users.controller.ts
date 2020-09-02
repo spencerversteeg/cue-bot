@@ -4,8 +4,9 @@ import userModel from "./users.model";
 import UserNotFoundException from "../exceptions/UserNotFoundException";
 import validation from "../middleware/validation.middleware";
 import UserDTO from "./user.dto";
+import Controller from "../interfaces/controller.interface";
 
-class UserController {
+class UserController implements Controller {
   public path = "/users";
   public router = Router();
   private user = userModel;
@@ -14,13 +15,13 @@ class UserController {
     this.initializeRoutes();
   }
 
-  private initializeRoutes() {
+  private initializeRoutes = () => {
     this.router.get(this.path, this.getAllUsers);
     this.router.post(`${this.path}`, validation(UserDTO), this.createUser);
     this.router.get(`${this.path}/:id`, this.getUserByID);
     this.router.patch(`${this.path}/:id`, validation(UserDTO), this.modifyUser);
     this.router.delete(`${this.path}/:id`, this.deleteUser);
-  }
+  };
 
   private getAllUsers = async (req: Request, res: Response) => {
     try {
