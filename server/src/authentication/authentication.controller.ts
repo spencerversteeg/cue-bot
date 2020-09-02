@@ -7,7 +7,6 @@ import Token from "../interfaces/token.interface";
 
 import User from "../users/users.interface";
 import user_model from "../users/users.model";
-import user_dto from "../users/user.dto";
 
 import MissingCodeException from "../exceptions/MissingCodeException";
 
