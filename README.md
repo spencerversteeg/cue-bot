@@ -48,5 +48,5 @@ $ cd client
 $ npm install
 
 # Start the express development server on port 8081.
-$ npm start
+$ npm run dev
 ```

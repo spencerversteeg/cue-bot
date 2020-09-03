@@ -17,7 +17,7 @@ export default {
 
       try {
         const stepTwo = await this.$http.post(
-          "http://localhost:8081/api/user/register",
+          "http://localhost:8081/api/auth/login",
           { code: this.$route.query.code }
         );
 
