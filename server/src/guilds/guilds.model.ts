@@ -12,6 +12,12 @@ const guildSchema = new Schema({
       ref: "Command",
     },
   ],
+  events: [
+    {
+      type: String,
+      ref: "Event",
+    },
+  ],
   // The user is an array, so other users can be added to the guild
   // So that other users can manage their Cue instance.
   users: [

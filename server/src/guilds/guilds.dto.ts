@@ -8,6 +8,9 @@ class CreateGuildDTO {
   public commands: string[];
 
   @IsString()
+  public events: string[];
+
+  @IsString()
   public users: string[];
 }
 
