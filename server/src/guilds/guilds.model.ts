@@ -22,6 +22,6 @@ const guildSchema = new Schema({
   ],
 });
 
-const guildModel = model<Guild & Document>("User", guildSchema);
+const guildModel = model<Guild & Document>("Guild", guildSchema);
 
 export default guildModel;

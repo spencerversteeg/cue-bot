@@ -15,7 +15,17 @@ class GuildController implements Controller {
     this.initializeRoutes();
   }
 
-  private initializeRoutes = () => {};
+  private initializeRoutes = () => {
+    this.router.get(this.path, this.getAllGuilds);
+    this.router.post(`${this.path}`, validation(GuildDTO), this.createGuild);
+    this.router.get(`${this.path}/:id`, this.getGuildByID);
+    this.router.patch(
+      `${this.path}/:id`,
+      validation(GuildDTO),
+      this.modifyGuild
+    );
+    this.router.delete(`${this.path}/:id`, this.deleteGuild);
+  };
 
   private getAllGuilds = async (req: Request, res: Response) => {
     try {
@@ -59,7 +69,7 @@ class GuildController implements Controller {
       const guildData: Guild = req.body;
       const guild = await this.guild.findByIdAndUpdate(
         req.params.id,
-        userData,
+        guildData,
         {
           new: true,
         }
@@ -95,8 +105,8 @@ class GuildController implements Controller {
     next: NextFunction
   ) => {
     try {
-      const deletedUser = await this.guild.findByIdAndDelete(req.params.id);
-      if (deletedUser) return res.status(200).send({});
+      const deletedGuild = await this.guild.findByIdAndDelete(req.params.id);
+      if (deletedGuild) return res.status(200).send({});
 
       return next(new GuildNotFoundException(req.params.id));
     } catch (error) {
