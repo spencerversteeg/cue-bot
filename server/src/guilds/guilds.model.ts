@@ -8,13 +8,13 @@ const guildSchema = new Schema({
   },
   commands: [
     {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "Command",
     },
   ],
   events: [
     {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "Event",
     },
   ],
@@ -22,7 +22,7 @@ const guildSchema = new Schema({
   // So that other users can manage their Cue instance.
   users: [
     {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
   ],

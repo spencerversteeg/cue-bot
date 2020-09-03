@@ -5,6 +5,7 @@ import GuildDTO from "./guilds.dto";
 import GuildNotFoundException from "../exceptions/GuildNotFoundException";
 import Controller from "../interfaces/controller.interface";
 import validation from "../middleware/validation.middleware";
+import { loginRequired } from "../middleware/authentication.middleware";
 
 class GuildController implements Controller {
   public path = "/guilds";
@@ -16,7 +17,7 @@ class GuildController implements Controller {
   }
 
   private initializeRoutes = () => {
-    this.router.get(this.path, this.getAllGuilds);
+    this.router.get(this.path, loginRequired, this.getAllGuilds);
     this.router.post(`${this.path}`, validation(GuildDTO), this.createGuild);
     this.router.get(`${this.path}/:id`, this.getGuildByID);
     this.router.patch(

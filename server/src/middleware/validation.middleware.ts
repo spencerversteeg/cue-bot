@@ -3,10 +3,10 @@ import { validate, ValidationError } from "class-validator";
 import { RequestHandler } from "express";
 import HttpException from "../exceptions/HttpException";
 
-function validation<T>(
+const validation = <T>(
   type: any,
   skipMissingProperties = false
-): RequestHandler {
+): RequestHandler => {
   return (req, res, next) => {
     validate(plainToClass(type, req.body), { skipMissingProperties }).then(
       (errors: ValidationError[]) => {
@@ -21,6 +21,6 @@ function validation<T>(
       }
     );
   };
-}
+};
 
 export default validation;

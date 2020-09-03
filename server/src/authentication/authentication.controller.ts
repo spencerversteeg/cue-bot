@@ -6,14 +6,17 @@ import Controller from "../interfaces/controller.interface";
 import Token from "../interfaces/token.interface";
 
 import User from "../users/users.interface";
-import user_model from "../users/users.model";
+import userModel from "../users/users.model";
+import guildModel from "../guilds/guilds.model";
 
 import MissingCodeException from "../exceptions/MissingCodeException";
+import HttpException from "../exceptions/HttpException";
+import AlreadyExistException from "../exceptions/AlreadyExistException";
 
 class AuthenticationController implements Controller {
   public path = "/auth";
   public router = Router();
-  private user = user_model;
+  private user = userModel;
 
   constructor() {
     this.initializeRoutes();
@@ -53,6 +56,8 @@ class AuthenticationController implements Controller {
     };
 
     const newUser = await this.user.create(newUserData);
+
+    this.createGuild(authDiscordData.guild.id, discordUserData.id);
 
     const token_data = this.createToken(newUserData);
     res.setHeader("Set-Cookie", [this.createCookie(token_data)]);
@@ -121,6 +126,24 @@ class AuthenticationController implements Controller {
 
   private createCookie = (tokenData: Token) => {
     return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
+  };
+
+  private createGuild = async (guildID: string, userID: string) => {
+    try {
+      const foundGuild = await guildModel.findById(guildID);
+      if (foundGuild) return new AlreadyExistException(guildID);
+
+      const newGuild = await guildModel.create({
+        _id: guildID,
+        commands: [],
+        events: [],
+        users: [userID],
+      });
+
+      return newGuild;
+    } catch (error) {
+      return new HttpException(400, " error");
+    }
   };
 }
 

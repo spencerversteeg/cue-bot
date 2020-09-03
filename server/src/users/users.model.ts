@@ -18,7 +18,7 @@ const userSchema = new Schema({
   },
   guilds: [
     {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "Guild",
     },
   ],
