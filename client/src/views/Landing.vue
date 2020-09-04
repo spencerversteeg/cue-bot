@@ -22,9 +22,12 @@ export default {
         );
 
         // Once the response is done, set the JWT within the Vuex module and redirect the user to the add the bot page.
-        if (stepTwo.body.token) {
-          this.$store.commit("user/setJWT", stepTwo.body.token);
-          this.$router.push("/add");
+        if (stepTwo.body.id) {
+          const testAccess = await this.$http.get(
+            "http://localhost:8081/api/guilds/"
+          );
+          console.log(testAccess.body);
+          // this.$router.push("/add");
         }
       } catch (error) {
         console.log(error);

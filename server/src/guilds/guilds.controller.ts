@@ -5,7 +5,8 @@ import GuildDTO from "./guilds.dto";
 import GuildNotFoundException from "../exceptions/GuildNotFoundException";
 import Controller from "../interfaces/controller.interface";
 import validation from "../middleware/validation.middleware";
-import { loginRequired } from "../middleware/authentication.middleware";
+import { authenticate } from "../middleware/authentication.middleware";
+import HttpException from "../exceptions/HttpException";
 
 class GuildController implements Controller {
   public path = "/guilds";
@@ -17,7 +18,7 @@ class GuildController implements Controller {
   }
 
   private initializeRoutes = () => {
-    this.router.get(this.path, loginRequired, this.getAllGuilds);
+    this.router.get(this.path, authenticate, this.getAllGuilds);
     this.router.post(`${this.path}`, validation(GuildDTO), this.createGuild);
     this.router.get(`${this.path}/:id`, this.getGuildByID);
     this.router.patch(
@@ -28,21 +29,17 @@ class GuildController implements Controller {
     this.router.delete(`${this.path}/:id`, this.deleteGuild);
   };
 
-  private getAllGuilds = async (req: Request, res: Response) => {
+  private getAllGuilds = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const guilds = await this.guild.find();
-      this.router.get(this.path, this.getAllGuilds);
-      this.router.post(`${this.path}`, validation(GuildDTO), this.createGuild);
-      this.router.get(`${this.path}/:id`, this.getGuildByID);
-      this.router.patch(
-        `${this.path}/:id`,
-        validation(GuildDTO),
-        this.modifyGuild
-      );
-      this.router.delete(`${this.path}/:id`, this.deleteGuild);
+
       return res.status(200).json(guilds);
     } catch (error) {
-      throw new Error(error);
+      return next(new HttpException(404, "There was no guilds found."));
     }
   };
 

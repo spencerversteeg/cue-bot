@@ -57,7 +57,7 @@ class AuthenticationController implements Controller {
 
     const newUser = await this.user.create(newUserData);
 
-    this.createGuild(authDiscordData.guild.id, discordUserData.id);
+    await this.createGuild(authDiscordData.guild.id, discordUserData.id);
 
     const token_data = this.createToken(newUserData);
     res.setHeader("Set-Cookie", [this.createCookie(token_data)]);
@@ -125,7 +125,7 @@ class AuthenticationController implements Controller {
   };
 
   private createCookie = (tokenData: Token) => {
-    return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
+    return `Authorization=${tokenData.token}; Max-Age=${tokenData.expiresIn}; Path=/; Domain=http://localhost:8080`;
   };
 
   private createGuild = async (guildID: string, userID: string) => {

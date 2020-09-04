@@ -1,3 +1,4 @@
+import cors from "cors";
 import bodyParser from "body-parser";
 import express, { Application } from "express";
 import mongoose from "mongoose";
@@ -26,6 +27,7 @@ class App {
   private initializeMiddleware() {
     this.app.use(logger_middleware);
     this.app.use(bodyParser.json());
+    this.app.use(cors());
   }
 
   private initializeErrorHandler() {

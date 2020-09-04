@@ -5,6 +5,7 @@ import UserNotFoundException from "../exceptions/UserNotFoundException";
 import validation from "../middleware/validation.middleware";
 import UserDTO from "./user.dto";
 import Controller from "../interfaces/controller.interface";
+import HttpException from "../exceptions/HttpException";
 
 class UserController implements Controller {
   public path = "/users";
@@ -23,13 +24,17 @@ class UserController implements Controller {
     this.router.delete(`${this.path}/:id`, this.deleteUser);
   };
 
-  private getAllUsers = async (req: Request, res: Response) => {
+  private getAllUsers = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const users = await this.user.find();
 
       return res.status(200).json(users);
     } catch (error) {
-      throw new Error(error);
+      return next(new HttpException(404, "There was no users found."));
     }
   };
 
