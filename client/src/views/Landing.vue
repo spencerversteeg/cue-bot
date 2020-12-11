@@ -16,10 +16,9 @@ export default {
       if (!this.$route.query.code) return;
 
       try {
-        const stepTwo = await this.$http.post(
-          "http://localhost:8081/api/auth/login",
-          { code: this.$route.query.code }
-        );
+        const stepTwo = await this.$http.post("/api/auth/login", {
+          code: this.$route.query.code,
+        });
 
         // Once the response is done, set the JWT within the Vuex module and redirect the user to the add the bot page.
         if (stepTwo.body.id) {

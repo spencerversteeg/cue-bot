@@ -1,51 +1,25 @@
+import "dotenv/config";
 import cors from "cors";
-import bodyParser from "body-parser";
 import express, { Application } from "express";
-import mongoose from "mongoose";
-import Controller from "./interfaces/controller.interface";
-import error_middleware from "./middleware/error.middleware";
-import logger_middleware from "./middleware/logger.middleware";
 
-class App {
-  public app: Application;
+// Import internal tools that make the app run.
+import db from "./models";
+import logger from "./middleware/logger.middleware";
+import error from "./middleware/error.middleware";
 
-  constructor(controllers: Controller[]) {
-    this.app = express();
+const app: Application = express();
 
-    this.connectDatabase();
-    this.initializeMiddleware();
-    this.initializeControllers(controllers);
-    this.initializeErrorHandler();
-  }
+// Initialize DB
+// This shouldn't be forced in production.
+db.sync({ force: true });
 
-  public listen() {
-    this.app.listen(process.env.PORT, () => {
-      console.log(`🚀 Cue Server is now listening on port ${process.env.PORT}`);
-    });
-  }
+// Middlewares
+app.use(cors());
+app.use(logger);
 
-  private initializeMiddleware() {
-    this.app.use(logger_middleware);
-    this.app.use(bodyParser.json());
-    this.app.use(cors());
-  }
+// TODO: Add Routes above error middleware.
+app.use(error);
 
-  private initializeErrorHandler() {
-    this.app.use(error_middleware);
-  }
-
-  private initializeControllers(controllers) {
-    controllers.forEach((controller) => {
-      this.app.use("/api/", controller.router);
-    });
-  }
-
-  private connectDatabase() {
-    mongoose.connect(process.env.MONGO_URI, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-    });
-  }
-}
-
-export default App;
+app.listen(process.env.PORT, () => {
+  console.info(`🚀 Express server now running on port ${process.env.PORT}.`);
+});
